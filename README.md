@@ -158,6 +158,23 @@ public class CustomerService {
 
 ---
 
+## 📚 Documentation
+
+- **[📘 Guide Complet](docs/COMPLETE_GUIDE.md)** - Tout comprendre sur common-audit
+  - Comment ça marche en détail
+  - SUCCESS vs FAILED - Comment c'est détecté
+  - Intégration avec UserContext
+  - Cas d'usage avancés
+  - Troubleshooting
+
+- **[🔍 Guide Audit-Service](docs/AUDIT_SERVICE_GUIDE.md)** - Configurer le consumer
+  - Configuration RabbitMQ/Kafka
+  - Créer les consumers
+  - Sauvegarder en base de données
+  - API REST pour consultation
+
+---
+
 ## 🔗 Integration
 
 Works seamlessly with:
