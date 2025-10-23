@@ -65,7 +65,22 @@ public class CustomerService {
 }
 ```
 
-**That's it!** Events are automatically published to `customer.events` queue/topic.
+**That's it!** Events are automatically published.
+
+### 🎯 Unified Mode (Recommended for 10+ microservices)
+
+Use a **single queue** for all audit events:
+
+**application.yml** (in each microservice):
+```yaml
+common:
+  audit:
+    destination-mode: unified
+```
+
+Now all services publish to `audit.events` - **no config needed in audit-service when adding new microservices!**
+
+See [Destination Modes Guide](docs/DESTINATION_MODES.md) for details.
 
 ---
 
@@ -166,6 +181,11 @@ public class CustomerService {
   - Intégration avec UserContext
   - Cas d'usage avancés
   - Troubleshooting
+
+- **[🎯 Modes de Destination](docs/DESTINATION_MODES.md)** - Une queue ou plusieurs?
+  - Mode "per-entity" vs "unified"
+  - Scalabilité pour 100+ microservices
+  - Migration et configuration
 
 - **[🔍 Guide Audit-Service](docs/AUDIT_SERVICE_GUIDE.md)** - Configurer le consumer
   - Configuration RabbitMQ/Kafka
