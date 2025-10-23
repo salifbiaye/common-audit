@@ -21,6 +21,12 @@ public abstract class AbstractAuditPublisher implements AuditPublisher {
     @Value("${spring.application.name:unknown-service}")
     private String serviceName;
 
+    @Value("${common.audit.destination-mode:per-entity}")
+    private String destinationMode;  // "per-entity" ou "unified"
+
+    @Value("${common.audit.unified-destination:audit.events}")
+    private String unifiedDestination;  // Nom de la queue unique
+
     @Override
     public void success(String entity, String entityId, String action) {
         success(entity, entityId, action, null);
@@ -64,11 +70,19 @@ public abstract class AbstractAuditPublisher implements AuditPublisher {
     }
 
     /**
-     * Détermine le nom de la destination (queue/topic) selon l'entité.
-     * Par défaut: entity.toLowerCase() + ".events"
-     * Exemple: "Customer" → "customer.events"
+     * Détermine le nom de la destination (queue/topic) selon la configuration.
+     *
+     * Mode "per-entity" (défaut): Une queue par entité
+     *   - Customer → "customer.events"
+     *   - User → "user.events"
+     *
+     * Mode "unified": Une seule queue pour tous
+     *   - Tous → "audit.events" (configurable)
      */
     protected String getDestinationName(String entity) {
+        if ("unified".equalsIgnoreCase(destinationMode)) {
+            return unifiedDestination;
+        }
         return entity.toLowerCase() + ".events";
     }
 }
