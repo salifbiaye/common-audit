@@ -1,0 +1,10 @@
+C:\Users\DELL\Downloads\sib-base\common-audit\src\main\java\com\crm_bancaire\common\audit\annotation\Auditable.java
+C:\Users\DELL\Downloads\sib-base\common-audit\src\main\java\com\crm_bancaire\common\audit\aspect\AuditAspect.java
+C:\Users\DELL\Downloads\sib-base\common-audit\src\main\java\com\crm_bancaire\common\audit\config\AuditAutoConfiguration.java
+C:\Users\DELL\Downloads\sib-base\common-audit\src\main\java\com\crm_bancaire\common\audit\dto\AuditEvent.java
+C:\Users\DELL\Downloads\sib-base\common-audit\src\main\java\com\crm_bancaire\common\audit\dto\AuditStatus.java
+C:\Users\DELL\Downloads\sib-base\common-audit\src\main\java\com\crm_bancaire\common\audit\extractor\ActorInfoExtractor.java
+C:\Users\DELL\Downloads\sib-base\common-audit\src\main\java\com\crm_bancaire\common\audit\extractor\EntityInfoExtractor.java
+C:\Users\DELL\Downloads\sib-base\common-audit\src\main\java\com\crm_bancaire\common\audit\publisher\AbstractAuditPublisher.java
+C:\Users\DELL\Downloads\sib-base\common-audit\src\main\java\com\crm_bancaire\common\audit\publisher\AuditPublisher.java
+C:\Users\DELL\Downloads\sib-base\common-audit\src\main\java\com\crm_bancaire\common\audit\publisher\StreamAuditPublisher.java

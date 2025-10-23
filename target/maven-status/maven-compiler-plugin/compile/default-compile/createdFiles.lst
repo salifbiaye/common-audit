@@ -1,0 +1,12 @@
+com\crm_bancaire\common\audit\publisher\AbstractAuditPublisher.class
+com\crm_bancaire\common\audit\dto\AuditStatus.class
+com\crm_bancaire\common\audit\aspect\AuditAspect.class
+com\crm_bancaire\common\audit\annotation\Auditable.class
+com\crm_bancaire\common\audit\extractor\ActorInfoExtractor.class
+com\crm_bancaire\common\audit\config\AuditAutoConfiguration.class
+com\crm_bancaire\common\audit\extractor\EntityInfoExtractor.class
+com\crm_bancaire\common\audit\publisher\AuditPublisher.class
+com\crm_bancaire\common\audit\dto\AuditEvent$AuditEventBuilder.class
+com\crm_bancaire\common\audit\dto\AuditEvent.class
+com\crm_bancaire\common\audit\aspect\AuditAspect$1.class
+com\crm_bancaire\common\audit\publisher\StreamAuditPublisher.class
