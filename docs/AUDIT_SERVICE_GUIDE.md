@@ -74,7 +74,7 @@ public class AuditEvent {
 <dependency>
     <groupId>com.github.salifbiaye</groupId>
     <artifactId>common-audit</artifactId>
-    <version>v1.0.0</version>
+    <version>v1.0.1</version>
 </dependency>
 
 <!-- PostgreSQL -->

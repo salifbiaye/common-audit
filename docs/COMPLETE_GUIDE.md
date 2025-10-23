@@ -402,6 +402,8 @@ public void delete(String id) {
 
 ## Installation et configuration
 
+> **💡 Pour débutants**: Consultez le **[Guide d'intégration de A à Z](INTEGRATION_GUIDE.md)** avec installation Docker RabbitMQ/Kafka, configuration complète, et troubleshooting.
+
 ### 1. Ajouter JitPack repository
 
 ```xml
@@ -420,7 +422,7 @@ public void delete(String id) {
 <dependency>
     <groupId>com.github.salifbiaye</groupId>
     <artifactId>common-audit</artifactId>
-    <version>v1.0.0</version>
+    <version>v1.0.1</version>
 </dependency>
 
 <!-- Common Security (optionnel mais recommandé pour UserContext) -->
@@ -430,26 +432,50 @@ public void delete(String id) {
     <version>v1.0.16</version>
 </dependency>
 
-<!-- RabbitMQ ou Kafka (choisir un) -->
+<!-- Choisissez RabbitMQ OU Kafka -->
+
+<!-- Option A: RabbitMQ -->
 <dependency>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
 </dependency>
 
-<!-- OU Kafka -->
+<!-- Option B: Kafka -->
+<!--
 <dependency>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-stream-binder-kafka</artifactId>
 </dependency>
+-->
 ```
 
-### 3. Configuration (AUCUNE!)
+### 3. Configuration application.yml
 
-✅ **Aucune configuration YAML requise!**
+**Configuration minimale recommandée:**
 
-Les queues/topics sont créées **automatiquement** selon le nom de l'entité:
-- `Customer` → `customer.events`
-- `User` → `user.events`
+```yaml
+spring:
+  application:
+    name: your-service-name  # IMPORTANT: Nom de votre microservice
+
+  # RabbitMQ (si utilisé)
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+common:
+  audit:
+    destination-mode: unified  # Mode unifié (recommandé pour 10+ microservices)
+
+  security:
+    expose-metadata: true      # Si common-security installé
+```
+
+**Modes disponibles:**
+- **`unified`** (recommandé): Tous les événements → `audit.events` (une seule queue)
+- **`per-entity`** (défaut): Une queue par entité (`customer.events`, `user.events`, etc.)
 - `Account` → `account.events`
 
 ---

@@ -22,7 +22,17 @@ Stop writing boilerplate audit code! Just add `@Auditable` and get automatic eve
 
 ## 🚀 Quick Start
 
-### Installation
+### 📖 Guide complet d'intégration
+
+**Nouveau sur common-audit?** Consultez notre **[Guide d'intégration de A à Z](docs/INTEGRATION_GUIDE.md)** qui couvre:
+
+- ✅ Installation étape par étape
+- ✅ Configuration complète RabbitMQ et Kafka
+- ✅ Configuration du service d'audit (consumer)
+- ✅ Exemples de code complets
+- ✅ Troubleshooting et tests
+
+### Installation rapide
 
 ```xml
 <repositories>
@@ -35,8 +45,32 @@ Stop writing boilerplate audit code! Just add `@Auditable` and get automatic eve
 <dependency>
     <groupId>com.github.salifbiaye</groupId>
     <artifactId>common-audit</artifactId>
-    <version>v1.0.0</version>
+    <version>v1.0.1</version>
 </dependency>
+
+<!-- RabbitMQ OU Kafka -->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
+</dependency>
+```
+
+### Configuration minimale
+
+```yaml
+spring:
+  application:
+    name: your-service-name
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+common:
+  audit:
+    destination-mode: unified
 ```
 
 ### Usage
@@ -175,19 +209,30 @@ public class CustomerService {
 
 ## 📚 Documentation
 
-- **[📘 Guide Complet](docs/COMPLETE_GUIDE.md)** - Tout comprendre sur common-audit
+### Pour débutants
+
+- **[🚀 Guide d'intégration de A à Z](docs/INTEGRATION_GUIDE.md)** - **COMMENCEZ ICI!**
+  - Installation étape par étape (Maven/Gradle)
+  - Configuration complète RabbitMQ et Kafka
+  - Setup du service d'audit (consumer)
+  - Exemples de code prêts à l'emploi
+  - Vérification et tests
+  - Troubleshooting complet
+
+### Documentation avancée
+
+- **[📘 Guide Complet](docs/COMPLETE_GUIDE.md)** - Architecture et détails techniques
   - Comment ça marche en détail
   - SUCCESS vs FAILED - Comment c'est détecté
   - Intégration avec UserContext
   - Cas d'usage avancés
-  - Troubleshooting
 
-- **[🎯 Modes de Destination](docs/DESTINATION_MODES.md)** - Une queue ou plusieurs?
+- **[🎯 Modes de Destination](docs/DESTINATION_MODES.md)** - Scalabilité
   - Mode "per-entity" vs "unified"
   - Scalabilité pour 100+ microservices
-  - Migration et configuration
+  - Migration entre modes
 
-- **[🔍 Guide Audit-Service](docs/AUDIT_SERVICE_GUIDE.md)** - Configurer le consumer
+- **[🔍 Guide Audit-Service](docs/AUDIT_SERVICE_GUIDE.md)** - Configuration du consumer
   - Configuration RabbitMQ/Kafka
   - Créer les consumers
   - Sauvegarder en base de données
