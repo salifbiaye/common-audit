@@ -14,9 +14,31 @@ import java.lang.annotation.Target;
  * Usage:
  * <pre>
  * {@code
+ * // Cas 1: Méthode retournant l'entité (extraction automatique via getId())
  * @Auditable(action = "CREATED", entity = "Customer")
  * public Customer createCustomer(Customer customer) {
  *     return customerRepository.save(customer);
+ * }
+ *
+ * // Cas 2: Méthode retournant String/Boolean - utiliser entityIdExpression
+ * @Auditable(action = "CREATED", entity = "User", entityIdExpression = "#result")
+ * public String addUser(UserRequest request) {
+ *     User user = userRepository.save(new User(request));
+ *     return user.getId(); // Le String retourné contient l'ID
+ * }
+ *
+ * // Cas 3: L'ID est dans un paramètre de la méthode
+ * @Auditable(action = "UPDATED", entity = "User", entityIdExpression = "#id")
+ * public Boolean updateUser(String id, UserRequest request) {
+ *     userRepository.update(id, request);
+ *     return true;
+ * }
+ *
+ * // Cas 4: L'ID est dans le premier paramètre
+ * @Auditable(action = "DELETED", entity = "User", entityIdExpression = "#p0")
+ * public Boolean deleteUser(String id) {
+ *     userRepository.delete(id);
+ *     return true;
  * }
  * }
  * </pre>

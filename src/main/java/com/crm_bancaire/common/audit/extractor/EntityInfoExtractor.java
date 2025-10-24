@@ -18,6 +18,9 @@ public class EntityInfoExtractor {
      * Par défaut, essaie d'appeler getId() sur l'objet.
      * Si ça échoue, essaie getUuid(), puis toString().
      *
+     * NOTE: Les String pures ne sont PAS acceptées comme entity ID.
+     * Utilisez entityIdExpression dans @Auditable pour extraire l'ID depuis les paramètres.
+     *
      * @param entity L'objet entité
      * @return L'ID de l'entité ou null si introuvable
      */
@@ -26,9 +29,17 @@ public class EntityInfoExtractor {
             return null;
         }
 
-        // Si c'est déjà une String, retourner directement
+        // IMPORTANT: Rejeter les String pures pour éviter de stocker des messages comme entity ID
+        // Ex: "utilisateur créé avec succès" ou "UserRequest(...)" ne doivent PAS être des entity IDs
         if (entity instanceof String) {
-            return (String) entity;
+            log.warn("Plain String '{}' rejected as entity ID. Use entityIdExpression in @Auditable to extract ID from method parameters.", entity);
+            return null;
+        }
+
+        // Rejeter les types primitifs et wrappers (Boolean, Integer, etc.)
+        if (entity instanceof Boolean || entity instanceof Number) {
+            log.warn("Primitive/wrapper type {} rejected as entity ID. Use entityIdExpression in @Auditable.", entity.getClass().getSimpleName());
+            return null;
         }
 
         // Essayer getId()
@@ -43,7 +54,7 @@ public class EntityInfoExtractor {
         id = tryField(entity, "id");
         if (id != null) return id;
 
-        // Fallback: toString()
+        // Fallback: toString() uniquement pour les objets complexes
         log.warn("Could not extract entity ID from {}, using toString()", entity.getClass().getSimpleName());
         return entity.toString();
     }
