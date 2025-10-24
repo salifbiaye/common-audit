@@ -8,9 +8,94 @@ Stop writing boilerplate audit code! Just add `@Auditable` and get automatic eve
 
 ---
 
+## 🎉 What's New in v1.0.2
+
+### Flexible EntityId Extraction
+
+No more forced return type changes! v1.0.2 introduces **multiple strategies** for extracting entity IDs:
+
+✨ **AuditContextHolder** - For methods returning String/Boolean
+```java
+@Auditable(action = "CREATED", entity = "User")
+public String addUser(UserRequest request) {
+    User savedUser = userRepository.save(user);
+    AuditContextHolder.setEntityId(savedUser.getId()); // ← Store the ID
+    return "Utilisateur créé avec succès"; // ← Return what you want!
+}
+```
+
+✨ **SpEL entityIdExpression** - Extract ID from parameters
+```java
+@Auditable(action = "UPDATED", entity = "User", entityIdExpression = "#id")
+public Boolean updateUser(String id, UserRequest request) {
+    // Audit will use the 'id' parameter
+    return true;
+}
+```
+
+✨ **Automatic extraction** - For entities with `getId()`
+```java
+@Auditable(action = "CREATED", entity = "Customer")
+public Customer createCustomer(Customer customer) {
+    return customerRepository.save(customer); // ← ID extracted automatically
+}
+```
+
+### Three-Tier Extraction Strategy
+1. **Check AuditContextHolder** first (ThreadLocal)
+2. **Evaluate entityIdExpression** with SpEL (#id, #customerId, etc.)
+3. **Fallback to EntityInfoExtractor** (getId(), getUuid(), id field)
+
+### Import Required
+```java
+import com.crm_bancaire.common.audit.annotation.Auditable;
+import com.crm_bancaire.common.audit.context.AuditContextHolder; // For CREATE operations
+```
+
+### Migration from v1.0.1 to v1.0.2
+
+**Breaking Change:** Plain String returns are NO LONGER accepted as entity IDs.
+
+**Before (v1.0.1):**
+```java
+@Auditable(action = "CREATED", entity = "User")
+public String addUser(UserRequest request) {
+    User savedUser = userRepository.save(user);
+    return savedUser.getId(); // ❌ This won't work anymore
+}
+```
+
+**After (v1.0.2) - Option 1: AuditContextHolder**
+```java
+@Auditable(action = "CREATED", entity = "User")
+public String addUser(UserRequest request) {
+    User savedUser = userRepository.save(user);
+    AuditContextHolder.setEntityId(savedUser.getId()); // ✅ Store ID
+    return "Utilisateur créé avec succès"; // ✅ Return message
+}
+```
+
+**After (v1.0.2) - Option 2: Return Entity**
+```java
+@Auditable(action = "CREATED", entity = "User")
+public User addUser(UserRequest request) {
+    return userRepository.save(new User(request)); // ✅ Automatic extraction
+}
+```
+
+**For UPDATE/DELETE operations with ID in parameters:**
+```java
+// Add entityIdExpression parameter
+@Auditable(action = "UPDATED", entity = "User", entityIdExpression = "#id")
+public Boolean updateUser(String id, UserRequest request) { ... }
+```
+
+---
+
 ## ✨ Features
 
 - ✅ **@Auditable annotation** - One line to audit any method
+- ✅ **Flexible entity ID extraction** - AuditContextHolder, SpEL expressions, or automatic
 - ✅ **Automatic actor tracking** - Integrates with common-security UserContext
 - ✅ **Success/Failure tracking** - Automatically detects exceptions
 - ✅ **RabbitMQ & Kafka support** - Auto-detects which broker you use
@@ -45,7 +130,7 @@ Stop writing boilerplate audit code! Just add `@Auditable` and get automatic eve
 <dependency>
     <groupId>com.github.salifbiaye</groupId>
     <artifactId>common-audit</artifactId>
-    <version>v1.0.1</version>
+    <version>v1.0.2</version>
 </dependency>
 
 <!-- RabbitMQ OU Kafka -->
@@ -79,27 +164,45 @@ common:
 @Service
 public class CustomerService {
 
-    // ✅ Automatic audit on success/failure
+    // ✅ Case 1: Return entity - Automatic ID extraction
     @Auditable(action = "CREATED", entity = "Customer")
     public Customer createCustomer(Customer customer) {
-        return customerRepository.save(customer);
+        return customerRepository.save(customer); // ID extracted via getId()
     }
 
-    @Auditable(action = "UPDATED", entity = "Customer")
-    public Customer updateCustomer(String id, CustomerRequest request) {
+    // ✅ Case 2: Return String/Boolean - Use AuditContextHolder
+    @Auditable(action = "CREATED", entity = "User")
+    public String addUser(UserRequest request) {
+        User savedUser = userRepository.save(new User(request));
+        AuditContextHolder.setEntityId(savedUser.getId()); // Store ID manually
+        return "Utilisateur créé avec succès";
+    }
+
+    // ✅ Case 3: ID in parameters - Use entityIdExpression
+    @Auditable(action = "UPDATED", entity = "Customer", entityIdExpression = "#id")
+    public Boolean updateCustomer(String id, CustomerRequest request) {
         Customer customer = findById(id);
         customer.setEmail(request.getEmail());
-        return customerRepository.save(customer);
+        customerRepository.save(customer);
+        return true; // Audit uses #id parameter
     }
 
-    @Auditable(action = "DELETED", entity = "Customer")
-    public void deleteCustomer(String id) {
-        customerRepository.deleteById(id);
+    // ✅ Case 4: Complex parameter - Use SpEL path
+    @Auditable(action = "DELETED", entity = "Customer", entityIdExpression = "#customerId")
+    public void deleteCustomer(String customerId) {
+        customerRepository.deleteById(customerId);
+    }
+
+    // ✅ Case 5: First parameter shortcut
+    @Auditable(action = "PASSWORD_CHANGED", entity = "User", entityIdExpression = "#p0")
+    public Boolean changePassword(String userId, String newPassword) {
+        userRepository.updatePassword(userId, newPassword);
+        return true; // Audit uses first parameter (#p0 = userId)
     }
 }
 ```
 
-**That's it!** Events are automatically published.
+**That's it!** Events are automatically published with correct entity IDs.
 
 ### 🎯 Unified Mode (Recommended for 10+ microservices)
 
